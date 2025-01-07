@@ -138,8 +138,26 @@ async function run() {
       }
       const result = await appliedVisa.find(option).toArray();
       res.send(result);
+     });
+    
+    // to sorting item by asending or decending
+    app.get("/sorting", async (req, res) => {
+      const { sortOrder } = req.query;
+      
+      let visas = await newVisaCollections.find().toArray();
+    
+      if (sortOrder) {
+        visas = visas.sort((a, b) => {
+          const feeA = a.fee || 0;
+          const feeB = b.fee || 0;
+          return sortOrder === "asc" ? feeA - feeB : feeB - feeA;
+        });
+      }
+    
+      res.send(visas);
     });
-
+    
+    
 
     // Default route
     app.get('/', (req, res) => {
