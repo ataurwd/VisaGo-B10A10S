@@ -8,7 +8,9 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.4jm04.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.4jm04.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@practicemongodb.zhvbu.mongodb.net/?appName=PracticeMongoDB`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -19,8 +21,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // await client.connect();
-    // await client.db("admin").command({ ping: 1 });
+    await client.connect();
+    console.log("Successfully connected to MongoDB!");
 
     const newVisaCollections = client.db('visa').collection('visa-collection');  
     const appliedVisa = client.db('visa').collection('applied-visa');  
@@ -140,7 +142,7 @@ async function run() {
       res.send(result);
      });
     
-    // to sorting item by asending or decending
+    // Sorting item by fee
     app.get("/sorting", async (req, res) => {
       const { sortOrder } = req.query;
       
@@ -148,8 +150,8 @@ async function run() {
     
       if (sortOrder) {
         visas = visas.sort((a, b) => {
-          const feeA = a.fee || 0;
-          const feeB = b.fee || 0;
+          const feeA = parseFloat(a.fee) || 0;
+          const feeB = parseFloat(b.fee) || 0;
           return sortOrder === "asc" ? feeA - feeB : feeB - feeA;
         });
       }
@@ -161,16 +163,16 @@ async function run() {
 
     // Default route
     app.get('/', (req, res) => {
-      res.send('Welcome to VisaEase');
+      res.send('Welcome to VisaEase Server');
     });
 
-  } finally {
-    // Cleanup if necessary
+    app.listen(port, () => {
+        console.log(`Server is running on port: ${port}`);
+    });
+
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
   }
 }
 
 run().catch(console.dir);
-
-app.listen(port, () => {
-});
-
