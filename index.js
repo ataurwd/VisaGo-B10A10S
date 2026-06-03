@@ -21,8 +21,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
-    console.log("Successfully connected to MongoDB!");
+    // await client.connect();
+    // console.log("Successfully connected to MongoDB!");
 
     const newVisaCollections = client.db('visa').collection('visa-collection');  
     const appliedVisa = client.db('visa').collection('applied-visa');  
